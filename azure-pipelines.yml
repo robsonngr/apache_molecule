@@ -7,21 +7,36 @@ pool:
 
 steps:
 
-- checkout: git://apache_molecule/apache_ansible
-  path: apache_ansible
+- task: CopyFiles@2
+  displayName: 'Copy file'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    OverWrite: true 
+    Contents: |
+      **/apache_ansible
+    TargetFolder: '/tmp/'
 
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.8'
 
-- script: python -m pip install "molecule[lint,docker]" "wheel" "ansible"
+- script: |
+    cd /tmp/apache_ansible
+    python -m venv .venv && source .venv/bin/activate
+    python -m pip install "molecule[lint,docker]" "wheel" "ansible"
   displayName: Install dependencies
 
 - script: python -m pip install "python-tss-sdk"
   displayName: Role-specific dependencies
 
 - script: |
-    export PATH="$PATH:/home/<user>/.local/bin/"
-    cd $(Agent.BuildDirectory)/apache_ansible
+    cd /tmp/apache_ansible
     molecule test
   displayName: Test relevant platforms
+
+- task: DeleteFiles@1
+  displayName: Delete Files
+  inputs:
+    SourceFolder: '/tmp/apache_ansible'
+    Contents: '**/*'
+    RemoveSourceFolder: true
