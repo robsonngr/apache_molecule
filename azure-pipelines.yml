@@ -1,0 +1,27 @@
+---
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-16.04
+
+steps:
+
+- checkout: git://apache_molecule/apache_ansible
+  path: apache_ansible
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.8'
+
+- script: python -m pip install "molecule[lint,docker]" "wheel" "ansible"
+  displayName: Install dependencies
+
+- script: python -m pip install "python-tss-sdk"
+  displayName: Role-specific dependencies
+
+- script: |
+    export PATH="$PATH:/home/<user>/.local/bin/"
+    cd $(Agent.BuildDirectory)/apache_ansible
+    molecule test
+  displayName: Test relevant platforms
