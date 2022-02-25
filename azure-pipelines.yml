@@ -13,7 +13,7 @@ steps:
     SourceFolder: '$(Build.SourcesDirectory)'
     OverWrite: true 
     Contents: |
-      **/apache_ansible
+      **/*
     TargetFolder: '/tmp/'
 
 - task: UsePythonVersion@0
@@ -26,8 +26,8 @@ steps:
     python -m pip install "molecule[lint,docker]" "wheel" "ansible"
   displayName: Install dependencies
 
-- script: python -m pip install "python-tss-sdk"
-  displayName: Role-specific dependencies
+#- script: python -m pip install "python-tss-sdk"
+#  displayName: Role-specific dependencies
 
 - script: |
     cd /tmp/apache_ansible
