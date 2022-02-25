@@ -31,6 +31,7 @@ steps:
 
 - script: |
     cd /tmp/apache_ansible
+    source .venv/bin/activate
     molecule test
   displayName: Test relevant platforms
 
